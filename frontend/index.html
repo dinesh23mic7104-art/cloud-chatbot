@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Chatbot</title>
+<style>
+  body {font-family: Arial; background: #f4f4f9; margin: 0; display: flex; flex-direction: column; height: 100vh;}
+  #chatbox {flex: 1; padding: 15px; overflow-y: auto; background: white;}
+  .msg {margin: 10px 0;}
+  .user {text-align: right; color: #0078d4;}
+  .bot {text-align: left; color: #333;}
+  #inputBox {display: flex; padding: 10px; background: #fff; border-top: 1px solid #ccc;}
+  input {flex: 1; padding: 10px; font-size: 16px;}
+  button {margin-left: 10px; padding: 10px; background: #0078d4; color: white; border: none;}
+</style>
+</head>
+<body>
+<div id="chatbox"><div class="msg bot">🤖 Hello! Ask me something.</div></div>
+<div id="inputBox">
+  <input type="text" id="userInput" placeholder="Type a message...">
+  <button onclick="sendMsg()">Send</button>
+</div>
+
+<script>
+const API_URL = "http://127.0.0.1:8000/chat";
+
+async function sendMsg() {
+  const input = document.getElementById("userInput");
+  const chat = document.getElementById("chatbox");
+  const text = input.value.trim();
+  if(!text) return;
+  chat.innerHTML += <div class='msg user'>🙋‍♂️ </div>;
+  input.value = "";
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({message: text})
+    });
+    const data = await res.json();
+    chat.innerHTML += <div class='msg bot'>🤖 </div>;
+  } catch {
+    chat.innerHTML += <div class='msg bot'>❌ Server not reachable</div>;
+  }
+  chat.scrollTop = chat.scrollHeight;
+}
+</script>
+</body>
+</html>
